@@ -1,10 +1,10 @@
-package ro.ubb.docsio;
+package com.docsio.backend;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class DocsIoApplicationTests {
+class BackendApplicationTests {
 
 	@Test
 	void contextLoads() {

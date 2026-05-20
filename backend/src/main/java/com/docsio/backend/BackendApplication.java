@@ -1,13 +1,13 @@
-package ro.ubb.docsio;
+package com.docsio.backend;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class DocsIoApplication {
+public class BackendApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(DocsIoApplication.class, args);
+		SpringApplication.run(BackendApplication.class, args);
 	}
 
 }
