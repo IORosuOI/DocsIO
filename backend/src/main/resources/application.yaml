@@ -1,3 +1,13 @@
 spring:
   application:
     name: backend
+  datasource:
+    url: jdbc:postgresql://localhost:5432/docsio
+    username: postgres
+    password: 2005
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+server:
+  port: 8082
