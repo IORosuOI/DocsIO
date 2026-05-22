@@ -11,6 +11,10 @@ public class Folder {
     private String name;
     private Long parentId;
 
+    @ManyToOne
+    @JoinColumn(name = "owner_id")
+    private User owner;
+
     public Long getId() {
         return id;
     }
@@ -33,5 +37,13 @@ public class Folder {
 
     public void setParentId(Long parentId) {
         this.parentId = parentId;
+    }
+
+    public User getOwner(){
+        return this.owner;
+    }
+
+    public void setOwner(User owner){
+        this.owner = owner;
     }
 }
