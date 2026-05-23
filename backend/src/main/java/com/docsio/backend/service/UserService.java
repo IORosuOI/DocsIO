@@ -7,4 +7,6 @@ public interface UserService {
     User save(User user);
     List<User> findAll();
     void delete(Long id);
+
+    User findByUsername(String username);
 }
