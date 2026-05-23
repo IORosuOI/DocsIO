@@ -1,10 +1,12 @@
 import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 import axios from "axios"
 
 export default function LoginPage({ onLogin }) {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
+  const navigate = useNavigate()
 
   const handleLogin = async () => {
     try {
@@ -13,6 +15,7 @@ export default function LoginPage({ onLogin }) {
         password,
       })
       onLogin(res.data)
+      navigate("/dashboard")
     } catch (e) {
       setError("Invalid credentials")
     }
@@ -23,19 +26,8 @@ export default function LoginPage({ onLogin }) {
       <h1 style={styles.title}>docsIO</h1>
       <div style={styles.card}>
         <h2>Login</h2>
-        <input
-          style={styles.input}
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <input
-          style={styles.input}
-          placeholder="Password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+        <input style={styles.input} placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} />
+        <input style={styles.input} placeholder="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
         {error && <p style={styles.error}>{error}</p>}
         <button style={styles.button} onClick={handleLogin}>Login</button>
         <p style={styles.link}>No account? <a href="/register">Register</a></p>
