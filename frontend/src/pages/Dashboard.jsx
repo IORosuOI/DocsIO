@@ -272,7 +272,12 @@ export default function Dashboard({ user, onLogout }) {
                             >
                                 <div style={styles.cardTop}>
                                     <div style={styles.cardTitle}>{doc.title}</div>
-                                    <div style={styles.cardMenuHint}>⋯</div>
+                                    <div
+                                        style={styles.cardMenuHint}
+                                        onClick={(e) => { e.stopPropagation(); handleRightClick(e, doc) }}
+                                    >
+                                        ⋯
+                                    </div>
                                 </div>
 
                                 <div style={styles.previewLines}>
