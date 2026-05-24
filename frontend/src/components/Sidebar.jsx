@@ -33,6 +33,10 @@ export default function Sidebar({ user, activeSection, setActiveSection, sidebar
                     ))}
                 </nav>
                 <div style={styles.sidebarBottom}>
+                    <button type="button" style={styles.sidebarItem} onClick={() => navigate("/analytics")}>
+                        <span style={styles.sidebarIcon}>📊</span>
+                        Analytics
+                    </button>
                     <button type="button" style={styles.sidebarItem} onClick={() => navigate("/settings")}>
                         <span style={styles.sidebarIcon}>⚙️</span>
                         Settings

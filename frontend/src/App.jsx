@@ -5,6 +5,7 @@ import RegisterPage from "./pages/RegisterPage"
 import Dashboard from "./pages/Dashboard"
 import EditorPage from "./pages/EditorPage"
 import SettingsPage from "./pages/SettingsPage.jsx";
+import AnalyticsPage from "./pages/AnalyticsPage.jsx";
 import axios from "axios"
 
 export default function App() {
@@ -40,7 +41,9 @@ export default function App() {
           <Route path="/register" element={currentUser ? <Navigate to="/dashboard" /> : <RegisterPage />} />
           <Route path="/dashboard" element={currentUser ? <Dashboard user={currentUser} onLogout={handleLogout} /> : <Navigate to="/login" />} />
           <Route path="/editor/:id" element={currentUser ? <EditorPage user={currentUser} /> : <Navigate to="/login" />} />
-          <Route path="/settings" element={currentUser ? <SettingsPage user={currentUser} onUserUpdate={setCurrentUser} /> : <Navigate to="/login" />} />          <Route path="*" element={<Navigate to="/login" />} />
+          <Route path="/settings" element={currentUser ? <SettingsPage user={currentUser} onUserUpdate={setCurrentUser} /> : <Navigate to="/login" />} />
+          <Route path="/analytics" element={currentUser ? <AnalyticsPage user={currentUser} /> : <Navigate to="/login" />} />
+          <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
       </BrowserRouter>
   )

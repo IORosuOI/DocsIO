@@ -14,6 +14,8 @@ export default function EditorPage({ user }) {
     const [showVersionHistory, setShowVersionHistory] = useState(false)
     const [versions, setVersions] = useState([])
     const [versionFlash, setVersionFlash] = useState("")
+    const [expandedVersionId, setExpandedVersionId] = useState(null)
+    const [hoveredVersionId, setHoveredVersionId] = useState(null)
     const { title, setTitle, content, setContent, saved, handleManualSave, saveError, lockError, readOnly } = useEditor(id, user.id)
 
     const fetchVersions = useCallback(async () => {
@@ -50,7 +52,13 @@ export default function EditorPage({ user }) {
     const handleRestore = (version) => {
         setTitle(version.title)
         setContent(version.content)
-        setShowVersionHistory(false)
+        setExpandedVersionId(null)
+        setVersionFlash(`Restored to ${version.versionLabel}`)
+        setTimeout(() => setVersionFlash(""), 2500)
+    }
+
+    const handleToggleExpand = (versionId) => {
+        setExpandedVersionId(prev => prev === versionId ? null : versionId)
     }
 
     const formatSavedAt = (savedAt) => {
@@ -117,7 +125,15 @@ export default function EditorPage({ user }) {
 
                 {saveError && <span style={{ color: "#dc2626", fontSize: "0.85rem" }}>{saveError}</span>}
                 {lockError && <span style={{ color: "#f59e0b", fontSize: "0.85rem" }}>🔒 {lockError}</span>}
-                {versionFlash && <span style={{ color: "#16a34a", fontSize: "0.85rem", fontWeight: 600 }}>{versionFlash}</span>}
+                {versionFlash && (
+                    <span style={{
+                        color: versionFlash.startsWith("Restored") ? "#b45309" : "#16a34a",
+                        fontSize: "0.85rem",
+                        fontWeight: 600
+                    }}>
+                        {versionFlash}
+                    </span>
+                )}
 
                 <div style={styles.topRight}>
                     <div style={{ position: "relative" }}>
@@ -234,41 +250,96 @@ export default function EditorPage({ user }) {
                                 No versions saved yet.
                             </p>
                         ) : (
-                            versions.map((v) => (
-                                <div key={v.id} style={{
-                                    backgroundColor: "#f4f6fb",
-                                    border: "1px solid #e5e7eb",
-                                    borderRadius: "12px",
-                                    padding: "0.85rem 1rem",
-                                    marginBottom: "0.6rem"
-                                }}>
-                                    <div style={{ fontWeight: 700, fontSize: "0.9rem", color: "#111827", marginBottom: "0.2rem" }}>
-                                        {v.versionLabel}
-                                    </div>
-                                    <div style={{ fontSize: "0.8rem", color: "#6b7280", marginBottom: "0.55rem" }}>
-                                        {v.title}
-                                    </div>
-                                    <div style={{ fontSize: "0.75rem", color: "#9ca3af", marginBottom: "0.65rem" }}>
-                                        {formatSavedAt(v.savedAt)}
-                                    </div>
-                                    <button
-                                        onClick={() => handleRestore(v)}
+                            versions.map((v) => {
+                                const isExpanded = expandedVersionId === v.id
+                                const isHovered = hoveredVersionId === v.id
+                                return (
+                                    <div
+                                        key={v.id}
                                         style={{
-                                            padding: "0.45rem 0.9rem",
-                                            backgroundColor: "#2563eb",
-                                            color: "white",
-                                            border: "none",
-                                            borderRadius: "999px",
+                                            backgroundColor: isHovered && !isExpanded ? "#f9fafb" : "white",
+                                            border: "1px solid #e5e7eb",
+                                            borderRadius: "12px",
+                                            padding: "1rem",
+                                            marginBottom: "0.75rem",
                                             cursor: "pointer",
-                                            fontWeight: 700,
-                                            fontSize: "0.8rem",
-                                            boxShadow: "0 4px 12px rgba(37,99,235,0.18)"
+                                            transition: "background-color 0.15s"
                                         }}
+                                        onClick={() => handleToggleExpand(v.id)}
+                                        onMouseEnter={() => setHoveredVersionId(v.id)}
+                                        onMouseLeave={() => setHoveredVersionId(null)}
                                     >
-                                        Restore
-                                    </button>
-                                </div>
-                            ))
+                                        <div style={{ fontWeight: 700, fontSize: "0.9rem", color: "#111827" }}>
+                                            {v.versionLabel}
+                                        </div>
+                                        <div style={{ fontSize: "0.75rem", color: "#9ca3af", marginTop: "0.2rem" }}>
+                                            {formatSavedAt(v.savedAt)}
+                                        </div>
+
+                                        {isExpanded && (
+                                            <div
+                                                onClick={(e) => e.stopPropagation()}
+                                                style={{ marginTop: "0.85rem" }}
+                                            >
+                                                <div style={{ fontSize: "0.85rem", fontWeight: 600, color: "#374151", marginBottom: "0.4rem" }}>
+                                                    {v.title || "Untitled"}
+                                                </div>
+                                                <div style={{
+                                                    maxHeight: "200px",
+                                                    overflowY: "auto",
+                                                    backgroundColor: "white",
+                                                    border: "1px solid #e5e7eb",
+                                                    borderRadius: "10px",
+                                                    padding: "0.75rem",
+                                                    fontSize: "0.82rem",
+                                                    lineHeight: 1.6,
+                                                    color: "#374151",
+                                                    fontFamily: "Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+                                                    whiteSpace: "pre-wrap",
+                                                    wordBreak: "break-word",
+                                                    marginBottom: "0.75rem"
+                                                }}>
+                                                    {v.content || <span style={{ color: "#9ca3af" }}>No content</span>}
+                                                </div>
+                                                <div style={{ display: "flex", gap: "0.5rem" }}>
+                                                    <button
+                                                        onClick={() => handleRestore(v)}
+                                                        style={{
+                                                            flex: 1,
+                                                            padding: "0.55rem 0.9rem",
+                                                            backgroundColor: "#2563eb",
+                                                            color: "white",
+                                                            border: "none",
+                                                            borderRadius: "999px",
+                                                            cursor: "pointer",
+                                                            fontWeight: 700,
+                                                            fontSize: "0.82rem",
+                                                            boxShadow: "0 4px 12px rgba(37,99,235,0.18)"
+                                                        }}
+                                                    >
+                                                        Restore this version
+                                                    </button>
+                                                    <button
+                                                        onClick={() => setExpandedVersionId(null)}
+                                                        style={{
+                                                            padding: "0.55rem 0.9rem",
+                                                            backgroundColor: "white",
+                                                            color: "#374151",
+                                                            border: "1px solid #d9deea",
+                                                            borderRadius: "999px",
+                                                            cursor: "pointer",
+                                                            fontWeight: 700,
+                                                            fontSize: "0.82rem"
+                                                        }}
+                                                    >
+                                                        Cancel
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                )
+                            })
                         )}
                     </div>
                 </div>
