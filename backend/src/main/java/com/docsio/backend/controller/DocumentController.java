@@ -34,11 +34,14 @@ public class DocumentController {
 
     @PostMapping
     public Document create(@RequestBody Document document) {
+        document.setCreatedAt(java.time.LocalDateTime.now());
+        document.setLastModified(java.time.LocalDateTime.now());
         return documentService.save(document);
     }
 
     @PutMapping("/{id}")
     public Document update(@PathVariable Long id, @RequestBody Document document) {
+        document.setLastModified(java.time.LocalDateTime.now());
         return documentService.update(id, document);
     }
 
