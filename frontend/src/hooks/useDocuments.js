@@ -3,13 +3,19 @@ import axios from "axios"
 
 export function useDocuments(userId) {
     const [documents, setDocuments] = useState([])
+    const [sharedDocuments, setSharedDocuments] = useState([])
 
     const fetchDocuments = async () => {
         const res = await axios.get(`http://localhost:8082/api/documents/owner/${userId}`)
         setDocuments(res.data)
     }
 
-    useEffect(() => { fetchDocuments() }, [])
+    const fetchSharedDocuments = async () => {
+        const res = await axios.get(`http://localhost:8082/api/permissions/user/${userId}`)
+        setSharedDocuments(res.data.map(p => ({ ...p.document, accessLevel: p.accessLevel, permissionId: p.id })))
+    }
+
+    useEffect(() => { fetchDocuments(); fetchSharedDocuments() }, [])
 
     const createDocument = async () => {
         await axios.post("http://localhost:8082/api/documents", {
@@ -26,5 +32,5 @@ export function useDocuments(userId) {
         await axios.delete(`http://localhost:8082/api/documents/${id}`)
     }
 
-    return { documents, setDocuments, fetchDocuments, createDocument, updateDocument, deleteDocument }
+    return { documents, setDocuments, fetchDocuments, createDocument, updateDocument, deleteDocument, sharedDocuments }
 }

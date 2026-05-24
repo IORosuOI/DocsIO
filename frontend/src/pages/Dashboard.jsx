@@ -7,6 +7,7 @@ import Sidebar from "../components/Sidebar.jsx"
 import DocumentCard from "../components/DocumentCard.jsx"
 import ContextMenu from "../components/ContextMenu.jsx"
 import RenameModal from "../components/RenameModal.jsx"
+import ShareModal from "../components/ShareModal.jsx"
 
 export default function Dashboard({ user, onLogout }) {
     const [activeSection, setActiveSection] = useState("home")
@@ -14,18 +15,20 @@ export default function Dashboard({ user, onLogout }) {
     const [renameModal, setRenameModal] = useState(null)
     const [renameTitle, setRenameTitle] = useState("")
     const [searchTerm, setSearchTerm] = useState("")
+    const [shareModal, setShareModal] = useState(null)
 
-    const { documents, setDocuments, fetchDocuments, createDocument, updateDocument, deleteDocument } = useDocuments(user.id)
+    const { documents, setDocuments, fetchDocuments, createDocument, updateDocument, deleteDocument, sharedDocuments } = useDocuments(user.id)
     const { sidebarWidth, setResizing } = useSidebar()
 
     const visibleDocuments = useMemo(() => {
         let docs = []
         if (activeSection === "home" || activeSection === "notes") docs = documents.filter(d => !d.deleted)
         else if (activeSection === "trash") docs = documents.filter(d => d.deleted === true)
+        else if (activeSection === "shared") docs = sharedDocuments
         else docs = []
         if (!searchTerm.trim()) return docs
         return docs.filter(d => (d.title || "").toLowerCase().includes(searchTerm.toLowerCase()))
-    }, [activeSection, documents, searchTerm])
+    }, [activeSection, documents, sharedDocuments, searchTerm])
 
     const sectionTitle = useMemo(() => ({
         home: "Recent Documents", notes: "My Notes", folders: "Folders",
@@ -86,6 +89,11 @@ export default function Dashboard({ user, onLogout }) {
         trash: "Trash is empty."
     }[activeSection] || "No documents yet. Create one!")
 
+    const openShareModal = () => {
+        setShareModal(contextMenu.doc)
+        setContextMenu(null)
+    }
+
     return (
         <div style={styles.container} onClick={() => setContextMenu(null)}>
             <Sidebar
@@ -138,6 +146,7 @@ export default function Dashboard({ user, onLogout }) {
                 onColorChange={handleColorChange}
                 onRestore={handleRestore}
                 onDelete={handleDelete}
+                onShare={openShareModal}
             />
 
             <RenameModal
@@ -147,6 +156,16 @@ export default function Dashboard({ user, onLogout }) {
                 onClose={() => { setRenameModal(null); setRenameTitle("") }}
                 onSave={handleRenameSave}
             />
+
+
+            {shareModal && (
+                <ShareModal
+                    doc={shareModal}
+                    currentUser={user}
+                    onClose={() => setShareModal(null)}
+                />
+            )}
+
         </div>
     )
 }

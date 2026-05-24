@@ -39,6 +39,7 @@ export default function EditorPage({ user }) {
                 {preview ? (
                     <div
                         style={styles.preview}
+                        className="markdown-preview"
                         dangerouslySetInnerHTML={{ __html: marked.parse(content || "") }}
                     />
                 ) : (

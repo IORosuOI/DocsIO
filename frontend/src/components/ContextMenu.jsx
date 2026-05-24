@@ -2,7 +2,7 @@ import styles from "../styles/dashboard.styles.js"
 
 const COLORS = ["#ffffff", "#fef9c3", "#dcfce7", "#dbeafe", "#fce7f3", "#f3e8ff"]
 
-export default function ContextMenu({ contextMenu, activeSection, onRename, onColorChange, onRestore, onDelete }) {
+export default function ContextMenu({ contextMenu, activeSection, onRename, onColorChange, onRestore, onDelete, onShare }) {
     if (!contextMenu) return null
 
     return (
@@ -29,7 +29,7 @@ export default function ContextMenu({ contextMenu, activeSection, onRename, onCo
                     Restore
                 </button>
             )}
-            <button type="button" style={{ ...styles.contextItem, ...styles.contextDisabled }} disabled>Share</button>
+            <button type="button" style={styles.contextItem} onClick={onShare}>Share</button>
             <button type="button" style={{ ...styles.contextItem, ...styles.contextDanger }} onClick={() => onDelete(contextMenu.doc.id)}>
                 Delete
             </button>

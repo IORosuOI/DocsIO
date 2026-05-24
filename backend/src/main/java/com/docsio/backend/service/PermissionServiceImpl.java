@@ -22,4 +22,7 @@ public class PermissionServiceImpl implements PermissionService {
 
     @Override
     public List<UserPermission> findByDocument(Long documentId) { return permissionRepository.findByDocumentId(documentId); }
+
+    @Override
+    public void revoke(Long id) { permissionRepository.deleteById(id); }
 }
