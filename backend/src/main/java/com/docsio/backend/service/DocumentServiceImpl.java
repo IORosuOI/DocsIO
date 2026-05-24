@@ -35,6 +35,7 @@ public class DocumentServiceImpl implements DocumentService {
         doc.setTitle(updated.getTitle());
         doc.setContent(updated.getContent());
         doc.setPinned(updated.getPinned());
+        doc.setColor(updated.getColor());
         return documentRepository.save(doc);
     }
 }

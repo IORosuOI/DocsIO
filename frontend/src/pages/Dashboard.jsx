@@ -19,6 +19,18 @@ export default function Dashboard({ user, onLogout }) {
     const [searchTerm, setSearchTerm] = useState("")
     const navigate = useNavigate()
 
+    const handleColorChange = async (color) => {
+        await axios.put(`http://localhost:8082/api/documents/${contextMenu.doc.id}`, {
+            ...contextMenu.doc,
+            color,
+            owner: { id: user.id }
+        })
+        setDocuments(prev =>
+            prev.map(doc => doc.id === contextMenu.doc.id ? { ...doc, color } : doc)
+        )
+        setContextMenu(null)
+    }
+
     const [sidebarWidth, setSidebarWidth] = useState(() => {
         const saved = localStorage.getItem("docsio_sidebar_width")
         return saved ? parseInt(saved) : 220
@@ -254,7 +266,7 @@ export default function Dashboard({ user, onLogout }) {
                         {visibleDocuments.map(doc => (
                             <article
                                 key={doc.id}
-                                style={styles.card}
+                                style={{ ...styles.card, backgroundColor: doc.color || "white" }}
                                 onContextMenu={(e) => handleRightClick(e, doc)}
                                 onClick={() => navigate(`/editor/${doc.id}`)}
                             >
@@ -297,6 +309,21 @@ export default function Dashboard({ user, onLogout }) {
                     <button type="button" style={styles.contextItem} onClick={openRenameModal}>
                         Rename
                     </button>
+
+                    <div style={styles.contextColorRow}>
+                        {["#ffffff", "#fef9c3", "#dcfce7", "#dbeafe", "#fce7f3", "#f3e8ff"].map(c => (
+                            <div
+                                key={c}
+                                style={{
+                                    ...styles.colorDot,
+                                    backgroundColor: c,
+                                    border: contextMenu.doc.color === c ? "2px solid #2563eb" : "2px solid #e5e7eb"
+                                }}
+                                onClick={() => handleColorChange(c)}
+                            />
+                        ))}
+                    </div>
+
                     <button type="button" style={{ ...styles.contextItem, ...styles.contextDisabled }} disabled>
                         Share
                     </button>
@@ -697,5 +724,19 @@ const styles = {
         backgroundColor: "transparent",
         flexShrink: 0,
         userSelect: "none"
+    },
+
+    contextColorRow: {
+        display: "flex",
+        gap: "0.4rem",
+        padding: "0.5rem 0.85rem",
+        alignItems: "center"
+    },
+    colorDot: {
+        width: "20px",
+        height: "20px",
+        borderRadius: "50%",
+        cursor: "pointer",
+        flexShrink: 0
     }
 }
