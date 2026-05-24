@@ -11,12 +11,14 @@ export function useEditor(id, userId) {
     const [readOnly, setReadOnly] = useState(false)
     const saveTimeout = useRef(null)
     const heartbeatInterval = useRef(null)
+    const [docMeta, setDocMeta] = useState({})
 
     useEffect(() => {
         axios.get(`http://localhost:8082/api/documents/${id}`)
             .then(res => {
                 setTitle(res.data.title || "")
                 setContent(res.data.content || "")
+                setDocMeta(res.data)
                 setLoaded(true)
             })
 
@@ -45,6 +47,7 @@ export function useEditor(id, userId) {
         if (readOnly) return
         try {
             await axios.put(`http://localhost:8082/api/documents/${id}`, {
+                ...docMeta,
                 title: titleVal,
                 content: contentVal,
                 owner: { id: userId }
