@@ -17,13 +17,23 @@ export function useEditor(id, userId) {
             })
     }, [id])
 
+    const [saveError, setSaveError] = useState("")
+
     const doSave = async (titleVal, contentVal) => {
-        await axios.put(`http://localhost:8082/api/documents/${id}`, {
-            title: titleVal,
-            content: contentVal,
-            owner: { id: userId }
-        })
-        setSaved(true)
+        try {
+            await axios.put(`http://localhost:8082/api/documents/${id}`, {
+                title: titleVal,
+                content: contentVal,
+                owner: { id: userId }
+            })
+            setSaved(true)
+            setSaveError("")
+        } catch (e) {
+            if (e.response?.status === 403) {
+                setSaveError("Read-only — you don't have edit permission")
+            }
+            setSaved(false)
+        }
     }
 
     useEffect(() => {
@@ -39,5 +49,5 @@ export function useEditor(id, userId) {
         doSave(title, content)
     }
 
-    return { title, setTitle, content, setContent, saved, handleManualSave }
+    return { title, setTitle, content, setContent, saved, handleManualSave, saveError }
 }

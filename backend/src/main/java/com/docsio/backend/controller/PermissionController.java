@@ -52,6 +52,17 @@ public class PermissionController {
 
         Document doc = documentService.findById(documentId);
 
+        if (doc.getOwner().getId().equals(recipient.getId())) {
+            return ResponseEntity.status(400).body("Cannot share with yourself");
+        }
+
+        List<UserPermission> existing = permissionService.findByDocument(documentId);
+        boolean alreadyShared = existing.stream()
+                .anyMatch(p -> p.getUser().getId().equals(recipient.getId()));
+        if (alreadyShared) {
+            return ResponseEntity.status(400).body("Already shared with this user");
+        }
+
         UserPermission permission = new UserPermission();
         permission.setUser(recipient);
         permission.setDocument(doc);
@@ -61,7 +72,18 @@ public class PermissionController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> revoke(@PathVariable Long id) {
+    public ResponseEntity<?> revoke(@PathVariable Long id,
+                                    @RequestHeader("X-User-Id") Long userId) {
+        UserPermission perm = permissionService.findById(id);
+        if (perm == null) return ResponseEntity.notFound().build();
+
+        boolean isDocOwner = perm.getDocument().getOwner().getId().equals(userId);
+        boolean isSelf = perm.getUser().getId().equals(userId);
+
+        if (!isDocOwner && !isSelf) {
+            return ResponseEntity.status(403).body("Not authorized");
+        }
+
         permissionService.revoke(id);
         return ResponseEntity.noContent().build();
     }

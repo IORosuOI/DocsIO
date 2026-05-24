@@ -25,4 +25,9 @@ public class PermissionServiceImpl implements PermissionService {
 
     @Override
     public void revoke(Long id) { permissionRepository.deleteById(id); }
+
+    @Override
+    public UserPermission findById(Long id) {
+        return permissionRepository.findById(id).orElse(null);
+    }
 }

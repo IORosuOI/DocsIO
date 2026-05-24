@@ -8,7 +8,7 @@ export default function EditorPage({ user }) {
     const { id } = useParams()
     const navigate = useNavigate()
     const [preview, setPreview] = useState(false)
-    const { title, setTitle, content, setContent, saved, handleManualSave } = useEditor(id, user.id)
+    const { title, setTitle, content, setContent, saved, handleManualSave, saveError } = useEditor(id, user.id)
 
     return (
         <div style={styles.container}>
@@ -22,6 +22,7 @@ export default function EditorPage({ user }) {
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder="Untitled"
                 />
+                {saveError && <span style={{ color: "#dc2626", fontSize: "0.85rem" }}>{saveError}</span>}
                 <div style={styles.topRight}>
                     <button style={styles.previewBtn} onClick={() => setPreview(p => !p)}>
                         {preview ? "Edit" : "Preview"}

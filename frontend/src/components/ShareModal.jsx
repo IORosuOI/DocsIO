@@ -28,7 +28,11 @@ export default function ShareModal({ doc, currentUser, onClose }) {
             const res = await axios.get(`http://localhost:8082/api/permissions/document/${doc.id}`)
             setPermissions(res.data)
         } catch (e) {
-            setError(e.response?.status === 404 ? "User not found" : "Failed to share")
+            setError(
+                e.response?.status === 404 ? "User not found" :
+                    e.response?.status === 400 ? e.response.data :
+                        "Failed to share"
+            )
         }
     }
 

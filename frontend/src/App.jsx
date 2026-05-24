@@ -5,11 +5,17 @@ import RegisterPage from "./pages/RegisterPage"
 import Dashboard from "./pages/Dashboard"
 import EditorPage from "./pages/EditorPage"
 import SettingsPage from "./pages/SettingsPage.jsx";
+import axios from "axios"
 
 export default function App() {
   const [currentUser, setCurrentUser] = useState(() => {
     const saved = localStorage.getItem("docsio_user")
-    return saved ? JSON.parse(saved) : null
+    if (saved) {
+      const user = JSON.parse(saved)
+      axios.defaults.headers.common['X-User-Id'] = user.id
+      return user
+    }
+    return null
   })
 
   useEffect(() => {
@@ -17,9 +23,16 @@ export default function App() {
     else localStorage.removeItem("docsio_user")
   }, [currentUser])
 
-  const handleLogin = (user) => setCurrentUser(user)
-  const handleLogout = () => setCurrentUser(null)
+  const handleLogin = (user) => {
+    setCurrentUser(user)
+    axios.defaults.headers.common['X-User-Id'] = user.id
+  }
 
+
+  const handleLogout = () => {
+    setCurrentUser(null)
+    delete axios.defaults.headers.common['X-User-Id']
+  }
   return (
       <BrowserRouter>
         <Routes>
