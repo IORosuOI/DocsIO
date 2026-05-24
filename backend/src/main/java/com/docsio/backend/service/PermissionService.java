@@ -10,4 +10,5 @@ public interface PermissionService {
     List<UserPermission> findByDocument(Long documentId);
     void revoke(Long id);
     UserPermission findById(Long id);
+    List<UserPermission> findAll();
 }

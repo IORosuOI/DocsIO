@@ -2,8 +2,10 @@ package com.docsio.backend.controller;
 
 import com.docsio.backend.domain.AccessLevel;
 import com.docsio.backend.domain.Document;
+import com.docsio.backend.domain.Folder;
 import com.docsio.backend.domain.UserPermission;
 import com.docsio.backend.service.DocumentService;
+import com.docsio.backend.service.FolderService;
 import com.docsio.backend.service.PermissionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,10 +18,12 @@ public class DocumentController {
 
     private final DocumentService documentService;
     private final PermissionService permissionService;
+    private final FolderService folderService;
 
-    public DocumentController(DocumentService documentService, PermissionService permissionService) {
+    public DocumentController(DocumentService documentService, PermissionService permissionService, FolderService folderService) {
         this.documentService = documentService;
         this.permissionService = permissionService;
+        this.folderService = folderService;
     }
 
     @GetMapping("/owner/{ownerId}")
@@ -76,5 +80,20 @@ public class DocumentController {
         }
         documentService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}/move/{folderId}")
+    public ResponseEntity<?> moveToFolder(@PathVariable Long id, @PathVariable Long folderId) {
+        Document doc = documentService.findById(id);
+        Folder folder = folderService.findById(folderId);
+        doc.setFolder(folder);
+        return ResponseEntity.ok(documentService.save(doc));
+    }
+
+    @PutMapping("/{id}/remove-from-folder")
+    public ResponseEntity<?> removeFromFolder(@PathVariable Long id) {
+        Document doc = documentService.findById(id);
+        doc.setFolder(null);
+        return ResponseEntity.ok(documentService.save(doc));
     }
 }

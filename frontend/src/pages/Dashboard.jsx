@@ -8,6 +8,9 @@ import DocumentCard from "../components/DocumentCard.jsx"
 import ContextMenu from "../components/ContextMenu.jsx"
 import RenameModal from "../components/RenameModal.jsx"
 import ShareModal from "../components/ShareModal.jsx"
+import FoldersView from "../components/FoldersView.jsx"
+import { useNavigate } from "react-router-dom"
+import MoveFolderModal from "../components/MoveFolderModal.jsx"
 
 export default function Dashboard({ user, onLogout }) {
     const [activeSection, setActiveSection] = useState("home")
@@ -16,6 +19,8 @@ export default function Dashboard({ user, onLogout }) {
     const [renameTitle, setRenameTitle] = useState("")
     const [searchTerm, setSearchTerm] = useState("")
     const [shareModal, setShareModal] = useState(null)
+    const [moveFolderModal, setMoveFolderModal] = useState(null)
+    const navigate = useNavigate()
 
     const { documents, setDocuments, fetchDocuments, createDocument, updateDocument, deleteDocument, sharedDocuments } = useDocuments(user.id)
     const { sidebarWidth, setResizing } = useSidebar()
@@ -44,9 +49,11 @@ export default function Dashboard({ user, onLogout }) {
         if (contextMenu.doc.deleted) {
             await deleteDocument(id)
             setDocuments(prev => prev.filter(d => d.id !== id))
+            if (contextMenu.removeFromFolderDocs) contextMenu.removeFromFolderDocs(id)
         } else {
             await updateDocument(id, { ...contextMenu.doc, deleted: true, owner: { id: user.id } })
             setDocuments(prev => prev.map(d => d.id === id ? { ...d, deleted: true } : d))
+            if (contextMenu.removeFromFolderDocs) contextMenu.removeFromFolderDocs(id)
         }
         setContextMenu(null)
     }
@@ -94,6 +101,24 @@ export default function Dashboard({ user, onLogout }) {
         setContextMenu(null)
     }
 
+    const openMoveFolderModal = () => {
+        setMoveFolderModal(contextMenu.doc)
+        setContextMenu(null)
+    }
+
+    const handleFolderDocContextMenu = (e, doc, removeFromFolder) => {
+        e.preventDefault()
+        e.stopPropagation()
+        setContextMenu({
+            x: e.clientX,
+            y: e.clientY,
+            doc,
+            removeFromFolder,
+            inFolder: true,
+            removeFromFolderDocs: removeFromFolder
+        })
+    }
+
     return (
         <div style={styles.container} onClick={() => setContextMenu(null)}>
             <Sidebar
@@ -124,11 +149,11 @@ export default function Dashboard({ user, onLogout }) {
                 </div>
 
                 {activeSection === "folders" ? (
-                    <div style={styles.comingSoonCard}>
-                        <div style={styles.comingSoonIcon}>📁</div>
-                        <h2 style={styles.comingSoonTitle}>Coming soon</h2>
-                        <p style={styles.emptyText}>Folder organization will be available here.</p>
-                    </div>
+                    <FoldersView
+                        user={user}
+                        onOpenDoc={(docId) => navigate(`/editor/${docId}`)}
+                        onDocContextMenu={handleFolderDocContextMenu}
+                    />
                 ) : (
                     <div style={styles.grid}>
                         {visibleDocuments.map(doc => (
@@ -147,6 +172,8 @@ export default function Dashboard({ user, onLogout }) {
                 onRestore={handleRestore}
                 onDelete={handleDelete}
                 onShare={openShareModal}
+                onMoveToFolder={openMoveFolderModal}
+                onClose={() => setContextMenu(null)}
             />
 
             <RenameModal
@@ -163,6 +190,15 @@ export default function Dashboard({ user, onLogout }) {
                     doc={shareModal}
                     currentUser={user}
                     onClose={() => setShareModal(null)}
+                />
+            )}
+
+            {moveFolderModal && (
+                <MoveFolderModal
+                    doc={moveFolderModal}
+                    user={user}
+                    onClose={() => setMoveFolderModal(null)}
+                    onMoved={fetchDocuments}
                 />
             )}
 

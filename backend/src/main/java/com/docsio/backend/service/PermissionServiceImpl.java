@@ -1,5 +1,6 @@
 package com.docsio.backend.service;
 
+import com.docsio.backend.domain.Folder;
 import com.docsio.backend.domain.UserPermission;
 import com.docsio.backend.repository.PermissionRepository;
 import org.springframework.stereotype.Service;
@@ -29,5 +30,10 @@ public class PermissionServiceImpl implements PermissionService {
     @Override
     public UserPermission findById(Long id) {
         return permissionRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public List<UserPermission> findAll() {
+        return permissionRepository.findAll();
     }
 }

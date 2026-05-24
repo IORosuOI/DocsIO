@@ -40,4 +40,9 @@ public class DocumentServiceImpl implements DocumentService {
         doc.setLastModified(updated.getLastModified());
         return documentRepository.save(doc);
     }
+
+    @Override
+    public List<Document> findByFolder(Long folderId) {
+        return documentRepository.findByFolderId(folderId);
+    }
 }

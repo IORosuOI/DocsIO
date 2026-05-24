@@ -2,7 +2,7 @@ import styles from "../styles/dashboard.styles.js"
 
 const COLORS = ["#ffffff", "#fef9c3", "#dcfce7", "#dbeafe", "#fce7f3", "#f3e8ff"]
 
-export default function ContextMenu({ contextMenu, activeSection, onRename, onColorChange, onRestore, onDelete, onShare }) {
+export default function ContextMenu({ contextMenu, activeSection, onRename, onColorChange, onRestore, onDelete, onShare, onMoveToFolder, onClose }) {
     if (!contextMenu) return null
 
     const isShared = !!contextMenu.doc.permissionId
@@ -32,6 +32,12 @@ export default function ContextMenu({ contextMenu, activeSection, onRename, onCo
                 </div>
             )}
 
+            {!isShared && (
+                <button type="button" style={styles.contextItem} onClick={onMoveToFolder}>
+                    Move to folder
+                </button>
+            )}
+
             {activeSection === "trash" && (
                 <button type="button" style={styles.contextItem} onClick={() => onRestore(contextMenu.doc.id)}>
                     Restore
@@ -45,6 +51,20 @@ export default function ContextMenu({ contextMenu, activeSection, onRename, onCo
             {!isShared && (
                 <button type="button" style={{ ...styles.contextItem, ...styles.contextDanger }} onClick={() => onDelete(contextMenu.doc.id)}>
                     Delete
+                </button>
+            )}
+
+            {contextMenu.inFolder && (
+                <button type="button" style={styles.contextItem}
+                        onClick={() => { contextMenu.removeFromFolder(contextMenu.doc.id); setContextMenu(null) }}>
+                    Remove from folder
+                </button>
+            )}
+
+            {contextMenu.inFolder && (
+                <button type="button" style={styles.contextItem}
+                        onClick={() => { contextMenu.removeFromFolder(contextMenu.doc.id); onClose() }}>
+                    Remove from folder
                 </button>
             )}
         </div>

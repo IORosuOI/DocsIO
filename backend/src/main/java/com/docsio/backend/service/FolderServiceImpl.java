@@ -22,4 +22,27 @@ public class FolderServiceImpl implements FolderService {
 
     @Override
     public void delete(Long id) { folderRepository.deleteById(id); }
+
+    @Override
+    public List<Folder> findByOwner(Long ownerId) {
+        return folderRepository.findByOwnerId(ownerId);
+    }
+
+    @Override
+    public List<Folder> findByParent(Long parentId) {
+        return folderRepository.findByParentId(parentId);
+    }
+
+    @Override
+    public Folder update(Long id, Folder folder) {
+        Folder existing = folderRepository.findById(id).orElseThrow();
+        existing.setName(folder.getName());
+        existing.setParentId(folder.getParentId());
+        return folderRepository.save(existing);
+    }
+
+    @Override
+    public Folder findById(Long id) {
+        return folderRepository.findById(id).orElseThrow();
+    }
 }

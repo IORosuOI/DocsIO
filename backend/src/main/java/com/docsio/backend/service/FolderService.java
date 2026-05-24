@@ -8,4 +8,8 @@ public interface FolderService {
     Folder save(Folder folder);
     List<Folder> findAll();
     void delete(Long id);
+    List<Folder> findByOwner(Long ownerId);
+    List<Folder> findByParent(Long parentId);
+    Folder update(Long id, Folder folder);
+    Folder findById(Long id);
 }

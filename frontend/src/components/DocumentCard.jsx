@@ -7,6 +7,9 @@ export default function DocumentCard({ doc, onContextMenu }) {
 
     return (
         <article
+            key={doc.id}
+            draggable
+            onDragStart={(e) => e.dataTransfer.setData("docId", doc.id)}
             style={{ ...styles.card, backgroundColor: doc.color || "white" }}
             onContextMenu={(e) => onContextMenu(e, doc)}
             onClick={() => navigate(`/editor/${doc.id}`)}

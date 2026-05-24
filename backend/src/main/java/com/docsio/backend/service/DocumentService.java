@@ -11,4 +11,5 @@ public interface DocumentService {
     void delete(Long id);
     Document findById(Long id);
     Document update(Long id, Document updated);
+    List<Document> findByFolder(Long folderId);
 }
