@@ -104,9 +104,27 @@ export default function Dashboard({ user, onLogout }) {
     }
 
     const handleDelete = async (id) => {
-        await axios.delete(`http://localhost:8082/api/documents/${id}`)
+        await axios.put(`http://localhost:8082/api/documents/${id}`, {
+            ...contextMenu.doc,
+            deleted: true,
+            owner: { id: user.id }
+        })
+        setDocuments(prev =>
+            prev.map(doc => doc.id === id ? { ...doc, deleted: true } : doc)
+        )
         setContextMenu(null)
-        fetchDocuments()
+    }
+
+    const handleRestore = async (id) => {
+        await axios.put(`http://localhost:8082/api/documents/${id}`, {
+            ...contextMenu.doc,
+            deleted: false,
+            owner: { id: user.id }
+        })
+        setDocuments(prev =>
+            prev.map(doc => doc.id === id ? { ...doc, deleted: false } : doc)
+        )
+        setContextMenu(null)
     }
 
     const handleNewDoc = async () => {
@@ -328,6 +346,12 @@ export default function Dashboard({ user, onLogout }) {
                             />
                         ))}
                     </div>
+
+                    {activeSection === "trash" && (
+                        <button type="button" style={styles.contextItem} onClick={() => handleRestore(contextMenu.doc.id)}>
+                            Restore
+                        </button>
+                    )}
 
                     <button type="button" style={{ ...styles.contextItem, ...styles.contextDisabled }} disabled>
                         Share
