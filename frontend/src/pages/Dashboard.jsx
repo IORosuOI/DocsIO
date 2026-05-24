@@ -298,8 +298,7 @@ export default function Dashboard({ user, onLogout }) {
                                     </div>
                                 </div>
 
-                                <div style={styles.previewLines}>
-                                    <div style={styles.previewText}>
+                                <div style={styles.previewText}>
                                         {doc.content
                                             ? doc.content
                                             .replace(/[#>*_`~\-]/g, "")
@@ -308,7 +307,6 @@ export default function Dashboard({ user, onLogout }) {
                                             .trim()
                                             .slice(0, 120) + (doc.content.length > 120 ? "..." : "")
                                             : "Empty document"}
-                                    </div>
                                 </div>
 
                                 <div style={styles.cardDate}>
