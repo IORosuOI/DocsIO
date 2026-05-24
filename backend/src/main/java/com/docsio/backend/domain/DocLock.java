@@ -18,6 +18,12 @@ public class DocLock {
     @JoinColumn(name = "document_id")
     private Document document;
 
+    @Column(name = "locked_by_user_id")
+    private Long lockedByUserId;
+
+    public Long getLockedByUserId() { return lockedByUserId; }
+    public void setLockedByUserId(Long lockedByUserId) { this.lockedByUserId = lockedByUserId; }
+
     public Long getId() {
         return id;
     }

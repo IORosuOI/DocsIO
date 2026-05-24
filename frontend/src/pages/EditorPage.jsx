@@ -8,8 +8,7 @@ export default function EditorPage({ user }) {
     const { id } = useParams()
     const navigate = useNavigate()
     const [preview, setPreview] = useState(false)
-    const { title, setTitle, content, setContent, saved, handleManualSave, saveError } = useEditor(id, user.id)
-
+    const { title, setTitle, content, setContent, saved, handleManualSave, saveError, lockError, readOnly } = useEditor(id, user.id)
     return (
         <div style={styles.container}>
             <div style={styles.topbar}>
@@ -22,6 +21,7 @@ export default function EditorPage({ user }) {
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder="Untitled"
                 />
+
                 {saveError && <span style={{ color: "#dc2626", fontSize: "0.85rem" }}>{saveError}</span>}
                 <div style={styles.topRight}>
                     <button style={styles.previewBtn} onClick={() => setPreview(p => !p)}>
@@ -34,6 +34,8 @@ export default function EditorPage({ user }) {
                         {saved ? "Saved" : "Save"}
                     </button>
                 </div>
+
+                {lockError && <span style={{ color: "#f59e0b", fontSize: "0.85rem" }}>🔒 {lockError}</span>}
             </div>
 
             <div style={styles.editorWrap}>
@@ -45,10 +47,11 @@ export default function EditorPage({ user }) {
                     />
                 ) : (
                     <textarea
-                        style={styles.editor}
+                        style={{ ...styles.editor, ...(readOnly ? { backgroundColor: "#f9f9f9", color: "#9ca3af" } : {}) }}
                         value={content}
-                        onChange={(e) => setContent(e.target.value)}
-                        placeholder="Start writing... markdown supported (# headers, **bold**, *italic*, lists)"
+                        onChange={(e) => !readOnly && setContent(e.target.value)}
+                        placeholder="Start writing... markdown supported"
+                        readOnly={readOnly}
                     />
                 )}
             </div>

@@ -6,7 +6,11 @@ export function useEditor(id, userId) {
     const [content, setContent] = useState("")
     const [saved, setSaved] = useState(true)
     const [loaded, setLoaded] = useState(false)
+    const [saveError, setSaveError] = useState("")
+    const [lockError, setLockError] = useState("")
+    const [readOnly, setReadOnly] = useState(false)
     const saveTimeout = useRef(null)
+    const heartbeatInterval = useRef(null)
 
     useEffect(() => {
         axios.get(`http://localhost:8082/api/documents/${id}`)
@@ -15,11 +19,30 @@ export function useEditor(id, userId) {
                 setContent(res.data.content || "")
                 setLoaded(true)
             })
+
+        axios.post(`http://localhost:8082/api/locks/acquire/${id}`)
+            .then(() => {
+                // start heartbeat
+                heartbeatInterval.current = setInterval(() => {
+                    axios.post(`http://localhost:8082/api/locks/heartbeat/${id}`)
+                }, 20000)
+            })
+            .catch(e => {
+                if (e.response?.status === 423) {
+                    setLockError("This document is being edited by someone else — read only")
+                    setReadOnly(true)
+                }
+            })
+
+        return () => {
+            axios.post(`http://localhost:8082/api/locks/release/${id}`)
+            if (heartbeatInterval.current) clearInterval(heartbeatInterval.current)
+            if (saveTimeout.current) clearTimeout(saveTimeout.current)
+        }
     }, [id])
 
-    const [saveError, setSaveError] = useState("")
-
     const doSave = async (titleVal, contentVal) => {
+        if (readOnly) return
         try {
             await axios.put(`http://localhost:8082/api/documents/${id}`, {
                 title: titleVal,
@@ -49,5 +72,5 @@ export function useEditor(id, userId) {
         doSave(title, content)
     }
 
-    return { title, setTitle, content, setContent, saved, handleManualSave, saveError }
+    return { title, setTitle, content, setContent, saved, handleManualSave, saveError, lockError, readOnly }
 }
