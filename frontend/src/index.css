@@ -105,3 +105,15 @@ code {
   padding: 4px 8px;
   background: var(--code-bg);
 }
+
+.markdown-preview h1, .markdown-preview h2, .markdown-preview h3 {
+  font-weight: 800;
+  margin: 1rem 0 0.5rem;
+  color: #111827;
+}
+.markdown-preview h1 { font-size: 1.8rem; }
+.markdown-preview h2 { font-size: 1.4rem; }
+.markdown-preview h3 { font-size: 1.1rem; }
+.markdown-preview p { margin: 0.5rem 0; }
+.markdown-preview ul, .markdown-preview ol { padding-left: 1.5rem; }
+
