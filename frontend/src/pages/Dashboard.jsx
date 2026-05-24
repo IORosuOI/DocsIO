@@ -228,9 +228,16 @@ export default function Dashboard({ user, onLogout }) {
                                 </div>
 
                                 <div style={styles.previewLines}>
-                                    <div style={{ ...styles.previewLine, width: "82%" }} />
-                                    <div style={{ ...styles.previewLine, width: "64%" }} />
-                                    <div style={{ ...styles.previewLine, width: "72%" }} />
+                                    <div style={styles.previewText}>
+                                        {doc.content
+                                            ? doc.content
+                                            .replace(/[#>*_`~\-]/g, "")
+                                            .replace(/!?\[([^\]]*)\]\([^)]*\)/g, "$1")
+                                            .replace(/\s+/g, " ")
+                                            .trim()
+                                            .slice(0, 120) + (doc.content.length > 120 ? "..." : "")
+                                            : "Empty document"}
+                                    </div>
                                 </div>
 
                                 <div style={styles.cardDate}>
@@ -635,5 +642,17 @@ const styles = {
         color: "white",
         cursor: "pointer",
         fontWeight: 800
+    },
+
+    previewText: {
+        margin: "0.8rem 0",
+        color: "#6b7280",
+        fontSize: "0.85rem",
+        lineHeight: 1.5,
+        overflow: "hidden",
+        display: "-webkit-box",
+        WebkitLineClamp: 3,
+        WebkitBoxOrient: "vertical",
+        minHeight: "3.8rem"
     }
 }
