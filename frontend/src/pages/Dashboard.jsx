@@ -189,6 +189,14 @@ export default function Dashboard({ user, onLogout }) {
                 </nav>
 
                 <div style={styles.sidebarBottom}>
+                    <button
+                        type="button"
+                        style={styles.sidebarItem}
+                        onClick={() => navigate("/settings")}
+                    >
+                        <span style={styles.sidebarIcon}>⚙️</span>
+                        Settings
+                    </button>
                     <div style={styles.userBlock}>
                         <div style={styles.avatar}>{getAvatarInitial()}</div>
                         <div style={styles.username}>{user?.username}</div>

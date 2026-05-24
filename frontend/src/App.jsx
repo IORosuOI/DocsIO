@@ -4,6 +4,7 @@ import LoginPage from "./pages/LoginPage"
 import RegisterPage from "./pages/RegisterPage"
 import Dashboard from "./pages/Dashboard"
 import EditorPage from "./pages/EditorPage"
+import SettingsPage from "./pages/SettingsPage.jsx";
 
 export default function App() {
   const [currentUser, setCurrentUser] = useState(() => {
@@ -26,7 +27,7 @@ export default function App() {
           <Route path="/register" element={currentUser ? <Navigate to="/dashboard" /> : <RegisterPage />} />
           <Route path="/dashboard" element={currentUser ? <Dashboard user={currentUser} onLogout={handleLogout} /> : <Navigate to="/login" />} />
           <Route path="/editor/:id" element={currentUser ? <EditorPage user={currentUser} /> : <Navigate to="/login" />} />
-          <Route path="*" element={<Navigate to="/login" />} />
+          <Route path="/settings" element={currentUser ? <SettingsPage user={currentUser} onUserUpdate={setCurrentUser} /> : <Navigate to="/login" />} />          <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
       </BrowserRouter>
   )

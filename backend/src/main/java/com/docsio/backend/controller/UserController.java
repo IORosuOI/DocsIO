@@ -59,4 +59,25 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody User updatedUser) {
+        User user = userService.findById(id);
+        if (user == null) return ResponseEntity.notFound().build();
+        user.setUsername(updatedUser.getUsername());
+        user.setEmail(updatedUser.getEmail());
+        return ResponseEntity.ok(userService.save(user));
+    }
+
+    @PutMapping("/{id}/password")
+    public ResponseEntity<?> changePassword(@PathVariable Long id, @RequestBody java.util.Map<String, String> body) {
+        User user = userService.findById(id);
+        if (user == null) return ResponseEntity.notFound().build();
+        if (!passwordEncoder.matches(body.get("currentPassword"), user.getPassword())) {
+            return ResponseEntity.status(401).body("Wrong current password");
+        }
+        user.setPassword(passwordEncoder.encode(body.get("newPassword")));
+        userService.save(user);
+        return ResponseEntity.ok().build();
+    }
+
 }
