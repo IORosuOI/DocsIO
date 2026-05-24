@@ -74,7 +74,7 @@ export default function EditorPage({ user }) {
                 <div style={styles.topRight}>
                     <div style={{ position: "relative" }}>
                         <button style={styles.previewBtn} onClick={() => setShowExportMenu(p => !p)}>
-                            Export ↓
+                            Export
                         </button>
                         {showExportMenu && (
                             <div style={{
@@ -92,7 +92,7 @@ export default function EditorPage({ user }) {
                                 flexDirection: "column"
                             }}>
                                 <button style={styles.previewBtn} onClick={() => { handleExportMD(true); setShowExportMenu(false) }}>
-                                    MD (with markdown)
+                                    MD (formatted)
                                 </button>
                                 <button style={styles.previewBtn} onClick={() => { handleExportMD(false); setShowExportMenu(false) }}>
                                     MD (plain text)
