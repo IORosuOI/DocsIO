@@ -19,6 +19,30 @@ export default function Dashboard({ user, onLogout }) {
     const [searchTerm, setSearchTerm] = useState("")
     const navigate = useNavigate()
 
+    const [sidebarWidth, setSidebarWidth] = useState(() => {
+        const saved = localStorage.getItem("docsio_sidebar_width")
+        return saved ? parseInt(saved) : 220
+    })
+    const [resizing, setResizing] = useState(false)
+
+    useEffect(() => {
+        if (!resizing) return
+        const handleMove = (e) => {
+            const newWidth = Math.max(160, Math.min(400, e.clientX))
+            setSidebarWidth(newWidth)
+        }
+        const handleUp = () => {
+            setResizing(false)
+            localStorage.setItem("docsio_sidebar_width", String(sidebarWidth))
+        }
+        window.addEventListener("mousemove", handleMove)
+        window.addEventListener("mouseup", handleUp)
+        return () => {
+            window.removeEventListener("mousemove", handleMove)
+            window.removeEventListener("mouseup", handleUp)
+        }
+    }, [resizing, sidebarWidth])
+
     const fetchDocuments = async () => {
         const res = await axios.get(`http://localhost:8082/api/documents/owner/${user.id}`)
         setDocuments(res.data)
@@ -144,7 +168,7 @@ export default function Dashboard({ user, onLogout }) {
 
     return (
         <div style={styles.container} onClick={handleContainerClick}>
-            <aside style={styles.sidebar}>
+            <aside style={{ ...styles.sidebar, width: sidebarWidth }}>
                 <h2 style={styles.logo}>docsIO</h2>
 
                 <nav style={styles.sidebarNav}>
@@ -174,6 +198,10 @@ export default function Dashboard({ user, onLogout }) {
                     </button>
                 </div>
             </aside>
+            <div
+                style={styles.resizer}
+                onMouseDown={() => setResizing(true)}
+            />
 
             <main style={styles.main}>
                 <div style={styles.topbar}>
@@ -315,7 +343,6 @@ const styles = {
         overflow: "hidden"
     },
     sidebar: {
-        width: "220px",
         backgroundColor: "#1a1a2e",
         color: "white",
         display: "flex",
@@ -654,5 +681,13 @@ const styles = {
         WebkitLineClamp: 3,
         WebkitBoxOrient: "vertical",
         minHeight: "3.8rem"
+    },
+
+    resizer: {
+        width: "5px",
+        cursor: "col-resize",
+        backgroundColor: "transparent",
+        flexShrink: 0,
+        userSelect: "none"
     }
 }
