@@ -372,3 +372,5 @@ const styles = {
         flexShrink: 0
     }
 }
+
+export default styles
